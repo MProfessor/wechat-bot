@@ -1,6 +1,6 @@
 const { Post } = require("./utils/request");
 const APIKEY = ""; // 调用OpenAI的密钥
-const ROBOT = "9527"; // 群聊触发机器人的首字符串
+const ROBOT = ""; // 群聊触发机器人的首字符串 可以不填 那就只能通过被艾特触发 慢一些
 
 const config = {
   AutoReply: true, // 启动自动回复
@@ -38,27 +38,27 @@ async function onMessage(msg) {
   const room = msg.room();
   const isText = msg.type() === bot.Message.Type.Text;
   if (isText && room) {
-    if (new RegExp(`/^${ROBOT}/`).test(content)) {
-      const groupContent = content.replace(new RegExp(`/^${ROBOT}/g`), "");
+    if (new RegExp(`^${ROBOT}|@AI Robot`).test(content)) {
+      const groupContent = content.replace(new RegExp(`^${ROBOT}`, "g"), "");
       if (!groupContent) return;
       replyMessage(room, groupContent.trim());
       const topic = await room.topic();
       console.log(
         `Group name: ${topic} talker: ${await contact.name()} content: ${content}`
       );
-    }
-
-    if (await msg.mentionSelf()) {
+    } else if (await msg.mentionSelf()) {
       const groupContent = content.replace(
-        new RegExp(`/@${receiver.name()}/g`),
+        new RegExp(`@${receiver.name()}`, "g"),
         ""
       );
+      console.log("groupContent", groupContent);
       if (!groupContent) return;
       replyMessage(room, groupContent.trim());
       const topic = await room.topic();
       console.log(
         `Group name: ${topic} talker: ${await contact.name()} content: ${content}`
       );
+    } else {
     }
   }
 }
